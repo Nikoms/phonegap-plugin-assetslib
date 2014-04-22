@@ -9,6 +9,7 @@
 
 @interface AssetsLib : CDVPlugin
 
+- (void)getAllPhotoDate:(CDVInvokedUrlCommand*)command;
 - (void)getAllPhotoMetadata:(CDVInvokedUrlCommand*)command;
 - (void)getThumbnails:(CDVInvokedUrlCommand*)command;
 - (void)getFullScreenPhotos:(CDVInvokedUrlCommand*)command;
