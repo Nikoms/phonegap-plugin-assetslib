@@ -28,7 +28,9 @@
 
 - (void)getAllPhotoDate:(CDVInvokedUrlCommand*)command
 {
-    NSLog(@"getAllPhotoMetadata");
+
+NSString * time = [command.arguments objectAtIndex:0];
+    NSLog(@"getAllPhotoDate");
     if (self.assetsLibrary == nil) {
         _assetsLibrary = [[ALAssetsLibrary alloc] init];
     }
@@ -101,6 +103,8 @@
 
 - (void)getAllPhotoDateComplete:(CDVInvokedUrlCommand*)command with:(NSString*)error
 {
+
+      NSString*	time = [command.arguments objectAtIndex:0];
     CDVPluginResult* pluginResult = nil;
      
     if (error != nil && [error length] > 0)
@@ -111,20 +115,35 @@
     else
     {   // Call was successful
         NSMutableDictionary* photos = [NSMutableDictionary dictionaryWithDictionary:@{}];
-        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
+        //Using timestamp instead of formated date
+	//NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+        //dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
         
         for (int i=0; i<[self.assets count]; i++)
         {
             ALAsset* asset = self.assets[i];
+  
+
             NSString* url = [[asset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
-            NSString* date = [dateFormatter stringFromDate:[asset valueForProperty:ALAssetPropertyDate]];
+            //Using timestamp instead of formated date
+            //NSString* date = [dateFormatter stringFromDate:[asset valueForProperty:ALAssetPropertyDate]];
+	    NSDate *d =   [asset valueForProperty:ALAssetPropertyDate];
+	    NSTimeInterval  timeStampValue = [ d timeIntervalSince1970];
+NSInteger pic_time = timeStampValue;
+		NSInteger p_time = [time intValue];
+int diff = p_time - pic_time;
+	    if(diff < 0 ){
+
+  ALAssetRepresentation* representation = [asset defaultRepresentation];
             NSDictionary* photo = @{
                                     @"url": url,
-                                    @"date": date
+			       @"filename":[representation filename],
+				   @"date": @(pic_time)
                                   };
 	    [photos setObject:photo forKey:photo[@"url"]];
-
+	    }else{
+//		NSLog(@"Time not in range");
+	    }
         }
         NSArray* photoMsg = [photos allValues];
         NSLog(@"Sending to phonegap application message with %lu photos",(unsigned long)[photoMsg count]);
@@ -388,3 +407,4 @@ typedef NSString* (^ALAssetsLibraryProcessBlock)(ALAsset *asset);
 }
 
 @end
+
