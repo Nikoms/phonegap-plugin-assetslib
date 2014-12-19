@@ -1,5 +1,5 @@
 var assetslib = {
-	getAllPhotoDate:function(timestamp, successCallback, errorCallback) {
+	getAllPhotoDate:function(timestamp_start,timestamp_end, successCallback, errorCallback) {
 		cordova.exec(successCallback, errorCallback, "AssetsLib", "getAllPhotoDate", [timestamp_start,timestamp_end]);
 	},
 	getAllPhotoMetadata:function(successCallback, errorCallback) {
