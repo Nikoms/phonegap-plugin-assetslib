@@ -138,11 +138,11 @@ NSInteger pic_time = timeStampValue;
 	    	if(diff_start < 0 && diff_end < 0 ){
 			ALAssetRepresentation* representation = [asset defaultRepresentation];
         	    	NSDictionary* photo = @{
-                                    @"url": url,
+                                    @"localURL": url,
 			       @"filename":[representation filename],
-				   @"date": @(pic_time)
+				   @"lastModifiedDate": @(pic_time)
                };
-	    [photos setObject:photo forKey:photo[@"url"]];
+	    [photos setObject:photo forKey:photo[@"localURL"]];
 	    }else{
 //		NSLog(@"Time not in range");
 	    }
