@@ -121,31 +121,36 @@ NSString * time = [command.arguments objectAtIndex:0];
         //dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
         
         for (int i=0; i<[self.assets count]; i++)
-        {
+        {  
             ALAsset* asset = self.assets[i];
-  
+
 
             NSString* url = [[asset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
             //Using timestamp instead of formated date
             //NSString* date = [dateFormatter stringFromDate:[asset valueForProperty:ALAssetPropertyDate]];
-	    NSDate *d =   [asset valueForProperty:ALAssetPropertyDate];
-	    NSTimeInterval  timeStampValue = [ d timeIntervalSince1970];
+            NSDate *d =   [asset valueForProperty:ALAssetPropertyDate];
+            NSTimeInterval  timeStampValue = [ d timeIntervalSince1970];
 NSInteger pic_time = timeStampValue;
-		NSInteger p_time_start = [time_start intValue];
-		NSInteger p_time_end = [time_end intValue];
-		int diff_start = p_time_start - pic_time;
-		int diff_end = pic_time - p_time_end;
-	    	if(diff_start < 0 && diff_end < 0 ){
-			ALAssetRepresentation* representation = [asset defaultRepresentation];
-        	    	NSDictionary* photo = @{
+                NSInteger p_time_start = [time_start intValue];
+                NSInteger p_time_end = [time_end intValue];
+                int diff_start = p_time_start - pic_time;
+                int diff_end = pic_time - p_time_end;
+                if(diff_start < 0 && diff_end < 0 ){
+                        ALAssetRepresentation* representation = [asset defaultRepresentation];
+  NSDictionary* metadata = [representation metadata];
+    NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
+                        NSDictionary* photo = @{
                                     @"localURL": url,
-			       @"filename":[representation filename],
-				   @"lastModifiedDate": @(pic_time)
+                                    @"exif": exif,
+                               @"filename":[representation filename],
+                                   @"lastModifiedDate": @(pic_time)
                };
-	    [photos setObject:photo forKey:photo[@"localURL"]];
-	    }else{
-//		NSLog(@"Time not in range");
-	    }
+
+
+            [photos setObject:photo forKey:photo[@"localURL"]];
+            }else{
+//              NSLog(@"Time not in range");
+            }
         }
         NSArray* photoMsg = [photos allValues];
         NSLog(@"Sending to phonegap application message with %lu photos",(unsigned long)[photoMsg count]);
