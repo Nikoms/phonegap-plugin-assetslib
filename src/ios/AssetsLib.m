@@ -130,26 +130,36 @@ NSString * time = [command.arguments objectAtIndex:0];
             //NSString* date = [dateFormatter stringFromDate:[asset valueForProperty:ALAssetPropertyDate]];
             NSDate *d =   [asset valueForProperty:ALAssetPropertyDate];
             NSTimeInterval  timeStampValue = [ d timeIntervalSince1970];
-NSInteger pic_time = timeStampValue;
+		NSInteger pic_time = timeStampValue;
                 NSInteger p_time_start = [time_start intValue];
                 NSInteger p_time_end = [time_end intValue];
-                int diff_start = p_time_start - pic_time;
-                int diff_end = pic_time - p_time_end;
-                if(diff_start < 0 && diff_end < 0 ){
+             if(diff_start < 0 && diff_end < 0 ){
                         ALAssetRepresentation* representation = [asset defaultRepresentation];
   NSDictionary* metadata = [representation metadata];
-    NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
+   NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
+                        NSDictionary* photo = @{
+                                    @"localURL": url,
+                               @"filename":[representation filename],
+                                   @"lastModifiedDate": @(pic_time)
+               };
+
+
+    if (exif != nil){
                         NSDictionary* photo = @{
                                     @"localURL": url,
                                     @"exif": exif,
                                @"filename":[representation filename],
                                    @"lastModifiedDate": @(pic_time)
                };
+        }else{
 
+              NSLog(@"Not any exif for this picture");
+}
 
             [photos setObject:photo forKey:photo[@"localURL"]];
+//              NSLog(@"Time in range");
             }else{
-//              NSLog(@"Time not in range");
+  //            NSLog(@"Time not in range");
             }
         }
         NSArray* photoMsg = [photos allValues];
