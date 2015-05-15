@@ -139,21 +139,20 @@ NSString * time = [command.arguments objectAtIndex:0];
                         ALAssetRepresentation* representation = [asset defaultRepresentation];
   NSDictionary* metadata = [representation metadata];
    NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
-                        NSDictionary* photo = @{
-                                    @"localURL": url,
-                               @"filename":[representation filename],
-                                   @"lastModifiedDate": @(pic_time)
-               };
-
-
+ NSDictionary* photo;
     if (exif != nil){
-                        NSDictionary* photo = @{
+                         photo = @{
                                     @"localURL": url,
                                     @"exif": exif,
                                @"filename":[representation filename],
                                    @"lastModifiedDate": @(pic_time)
                };
         }else{
+                         photo = @{
+                                    @"localURL": url,
+                               @"filename":[representation filename],
+                                   @"lastModifiedDate": @(pic_time)
+               };
 
               NSLog(@"Not any exif for this picture");
 }
