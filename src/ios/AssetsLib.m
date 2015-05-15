@@ -133,6 +133,8 @@ NSString * time = [command.arguments objectAtIndex:0];
 		NSInteger pic_time = timeStampValue;
                 NSInteger p_time_start = [time_start intValue];
                 NSInteger p_time_end = [time_end intValue];
+                int diff_start = p_time_start - pic_time;
+                int diff_end = pic_time - p_time_end;
              if(diff_start < 0 && diff_end < 0 ){
                         ALAssetRepresentation* representation = [asset defaultRepresentation];
   NSDictionary* metadata = [representation metadata];
