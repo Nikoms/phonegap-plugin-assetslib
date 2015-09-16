@@ -29,7 +29,7 @@
 - (void)getAllPhotoDate:(CDVInvokedUrlCommand*)command
 {
 
-NSString * time = [command.arguments objectAtIndex:0];
+    //NSString * time = [command.arguments objectAtIndex:0]; // unused
     NSLog(@"getAllPhotoDate");
     if (self.assetsLibrary == nil) {
         _assetsLibrary = [[ALAssetsLibrary alloc] init];
@@ -104,8 +104,8 @@ NSString * time = [command.arguments objectAtIndex:0];
 - (void)getAllPhotoDateComplete:(CDVInvokedUrlCommand*)command with:(NSString*)error
 {
 
-      NSString*	time_start = [command.arguments objectAtIndex:0];
-      NSString*	time_end = [command.arguments objectAtIndex:1];
+    NSString*	time_start = [command.arguments objectAtIndex:0];
+    NSString*	time_end = [command.arguments objectAtIndex:1];
     CDVPluginResult* pluginResult = nil;
      
     if (error != nil && [error length] > 0)
@@ -117,50 +117,52 @@ NSString * time = [command.arguments objectAtIndex:0];
     {   // Call was successful
         NSMutableDictionary* photos = [NSMutableDictionary dictionaryWithDictionary:@{}];
         //Using timestamp instead of formated date
-	//NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+        //NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
         //dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
         
+        int j=0;
         for (int i=0; i<[self.assets count]; i++)
-        {  
+        {
             ALAsset* asset = self.assets[i];
-
 
             NSString* url = [[asset valueForProperty:ALAssetPropertyAssetURL] absoluteString];
             //Using timestamp instead of formated date
             //NSString* date = [dateFormatter stringFromDate:[asset valueForProperty:ALAssetPropertyDate]];
             NSDate *d =   [asset valueForProperty:ALAssetPropertyDate];
             NSTimeInterval  timeStampValue = [ d timeIntervalSince1970];
-		NSInteger pic_time = timeStampValue;
-                NSInteger p_time_start = [time_start intValue];
-                NSInteger p_time_end = [time_end intValue];
-                int diff_start = p_time_start - pic_time;
-                int diff_end = pic_time - p_time_end;
-             if(diff_start < 0 && diff_end < 0 ){
-                        ALAssetRepresentation* representation = [asset defaultRepresentation];
-  NSDictionary* metadata = [representation metadata];
-   NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
- NSDictionary* photo;
-    if (exif != nil){
-                         photo = @{
-                                    @"localURL": url,
-                                    @"exif": exif,
-                               @"filename":[representation filename],
-                                   @"lastModifiedDate": @(pic_time)
-               };
-        }else{
-                         photo = @{
-                                    @"localURL": url,
-                               @"filename":[representation filename],
-                                   @"lastModifiedDate": @(pic_time)
-               };
+            NSInteger pic_time = timeStampValue;
+            NSInteger p_time_start = [time_start intValue];
+            NSInteger p_time_end = [time_end intValue];
+            int diff_start = p_time_start - pic_time;
+            int diff_end = pic_time - p_time_end;
+            if(diff_start < 0 && diff_end < 0 ){
+                @autoreleasepool {
+                    ALAssetRepresentation* representation = [asset defaultRepresentation];
+                    NSDictionary* metadata = [representation metadata];
+                    NSDictionary* exif = [metadata objectForKey:@"{Exif}"];
+                    NSDictionary* photo;
+                    if (exif != nil){
+                        photo = @{
+                            @"localURL": url,
+                            @"exif": exif,
+                            @"filename":[representation filename],
+                            @"lastModifiedDate": @(pic_time)
+                        };
+                    }else{
+                        photo = @{
+                            @"localURL": url,
+                            @"filename":[representation filename],
+                            @"lastModifiedDate": @(pic_time)
+                        };
 
-              NSLog(@"Not any exif for this picture");
-}
+                        NSLog(@"Not any exif for this picture");
+                    }
 
-            [photos setObject:photo forKey:photo[@"localURL"]];
-//              NSLog(@"Time in range");
+                    [photos setObject:photo forKey:photo[@"localURL"]];
+                    //NSLog(@"Time in range");
+                }
             }else{
-  //            NSLog(@"Time not in range");
+                //NSLog(@"Time not in range");
             }
         }
         NSArray* photoMsg = [photos allValues];
@@ -425,4 +427,3 @@ typedef NSString* (^ALAssetsLibraryProcessBlock)(ALAsset *asset);
 }
 
 @end
-
